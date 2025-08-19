@@ -32,7 +32,7 @@ export default function LoginPage() {
         timer: 1500,
         showConfirmButton: false,
       });
-      router.push("/dashboard");
+      router.push("/dashboardAdmin");
     } catch (err: any) {
       setError(err.response?.data?.message || "login gagal");
     }
@@ -45,7 +45,7 @@ export default function LoginPage() {
       >
         <div className="w-full flex flex-col items-center justify-center">
           <img src="image.png" className="w-20 h-20 " alt="" />
-          <h2 className="text-2xl font-bold mb-4">User Login</h2>
+          <h2 className="text-2xl font-bold mb-4">Admin Login</h2>
         </div>
         {error && <p className="text-red-500 mb-2">{error}</p>}
         <input

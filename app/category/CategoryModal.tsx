@@ -34,7 +34,7 @@ export default function CategoryModal({
         const cats = await categoryServices.getAll();
         onCategoriesUpdate(cats);
       }
-      onClose(); // tutup modal setelah submit
+      onClose(); 
     } catch (err) {
       console.error("Gagal tambah kategori", err);
       alert("Gagal tambah kategori");

@@ -4,7 +4,22 @@ import { Transaction } from "@/entities/transaction";
 export const transactionServices = {
   getAll: async (): Promise<Transaction[]> => {
     const res = await api.get("/transactions");
-    return res.data.transactions || [];
+    console.log("data get:", res);
+    res.data.transactions || [];
+
+    const mappedTransactions: Transaction[] = res.data.map((tx: any) => ({
+      id: tx.id,
+      user_id: tx.user_id,
+      deskripsi: tx.deskripsi,
+      jumlah: tx.jumlah,
+      tanggal: tx.tanggal,
+      tipe: tx.tipe || (tx.jumlah >= 0 ? "pemasukan" : "pengeluaran"),
+      kategori: tx.categories
+        ? { id: tx.categories.id, nama_kategori: tx.categories.nama_kategori }
+        : undefined,
+    }));
+
+    return mappedTransactions;
   },
 
   add: async (data: {

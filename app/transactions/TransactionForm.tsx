@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Category } from "@/entities/category";
 import { addTransaction, updateTransaction } from "@/usecase/addTransaction";
 import { Transaction } from "@/entities/transaction";
@@ -11,6 +11,7 @@ interface Props {
   type: "pemasukan" | "pengeluaran";
   transaction?: Transaction;
   onSuccess?: () => void;
+  onAddTransaction?: (tx: Transaction) => void;
 }
 
 export default function TransactionForm({
@@ -19,6 +20,7 @@ export default function TransactionForm({
   type,
   transaction,
   onSuccess,
+  onAddTransaction,
 }: Props) {
   const [deskripsi, setDeskripsi] = useState(transaction?.deskripsi || "");
   const [jumlah, setJumlah] = useState(transaction?.jumlah || 0);
@@ -27,14 +29,14 @@ export default function TransactionForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("🟢 Form submit triggered");
-    console.log("💾 Current form state:", {
-      deskripsi,
-      jumlah,
-      kategoriId,
-      tipe: type,
-    });
-    console.log("👤 User info:", user);
+    if (!user) {
+      alert("User belum tersedia");
+      return;
+    }
+    if (kategoriId === 0) {
+      alert("Pilih kategori dulu");
+      return;
+    }
 
     setLoading(true);
 
@@ -47,9 +49,6 @@ export default function TransactionForm({
         tipe: type,
       };
 
-      console.log(transaction ? "✏️ Update mode" : "➕ Create mode");
-      console.log("📤 Payload to send:", payload);
-
       let res;
       if (transaction) {
         res = await updateTransaction(transaction.id, payload);
@@ -57,22 +56,24 @@ export default function TransactionForm({
         res = await addTransaction(payload);
       }
 
-      console.log("📥 API response:", res);
-
       // Reset form
       setDeskripsi("");
       setJumlah(0);
       setKategoriId(0);
-      console.log("🔄 Form reset to initial state");
+
+      if (!transaction && res) {
+        onAddTransaction?.(res);
+      }
 
       onSuccess?.();
-      console.log("✅ onSuccess callback executed");
-    } catch (err) {
-      console.error("❌ Gagal simpan transaksi:", err);
-      alert("Gagal simpan transaksi");
+    } catch (err: any) {
+      console.error(
+        "❌ Gagal simpan transaksi:",
+        err.response?.data || err.message
+      );
+      alert(err.response?.data?.message || "Gagal simpan transaksi");
     } finally {
       setLoading(false);
-      console.log("⏳ Loading state set to false");
     }
   };
 
@@ -85,10 +86,7 @@ export default function TransactionForm({
         type="text"
         placeholder="Deskripsi"
         value={deskripsi}
-        onChange={(e) => {
-          setDeskripsi(e.target.value);
-          console.log("✏️ Deskripsi changed:", e.target.value);
-        }}
+        onChange={(e) => setDeskripsi(e.target.value)}
         className="w-full p-2 border rounded"
         required
       />
@@ -96,21 +94,13 @@ export default function TransactionForm({
         type="number"
         placeholder="Jumlah"
         value={jumlah}
-        onChange={(e) => {
-          const val = Number(e.target.value);
-          setJumlah(val);
-          console.log("💰 Jumlah changed:", val);
-        }}
+        onChange={(e) => setJumlah(Number(e.target.value))}
         className="w-full p-2 border rounded"
         required
       />
       <select
         value={kategoriId}
-        onChange={(e) => {
-          const val = Number(e.target.value);
-          setKategoriId(val);
-          console.log("📂 Kategori changed:", val);
-        }}
+        onChange={(e) => setKategoriId(Number(e.target.value))}
         className="w-full p-2 border rounded"
         required
       >

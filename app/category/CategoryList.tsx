@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Category } from "../../entities/category";
 import { categoryServices } from "../../services/categoryService";
-import CategoryEditModal from "./CategoryEditModal"; // modal edit
+import CategoryEditModal from "./CategoryEditModal";
 
 interface Props {
   categories: Category[];
@@ -24,8 +24,8 @@ export default function CategoryList({
       setLoadingId(id);
       await categoryServices.delete(id);
       if (onCategoriesUpdate) {
-        const cats = await categoryServices.getAll();
-        onCategoriesUpdate(cats);
+        const updatedCategories = await categoryServices.getAll();
+        onCategoriesUpdate(updatedCategories);
       }
     } catch (err) {
       console.error("Gagal hapus kategori:", err);
@@ -36,29 +36,43 @@ export default function CategoryList({
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
+      {/* Header */}
+      <div className="grid grid-cols-3 font-semibold text-gray-700 px-4">
+        <span>Kategori</span>
+        <span className="text-center">Tipe</span>
+        <span className="text-right mr-15">Aksi</span>
+      </div>
+
       {categories.map((cat) => (
         <div
           key={cat.id}
-          className="flex justify-between items-center bg-white p-2 rounded shadow"
+          className="grid grid-cols-3 items-center bg-white p-4 rounded-lg shadow hover:shadow-md transition"
         >
-          <div>
-            <span className="font-semibold">{cat.nama_kategori}</span>{" "}
-            <span className="text-gray-500 text-sm">({cat.tipe})</span>
-          </div>
-          <div className="flex gap-2">
+          {/* Nama Kategori */}
+          <span className="font-semibold text-gray-800">
+            {cat.nama_kategori}
+          </span>
+
+          {/* Tipe di tengah */}
+          <span className="text-gray-500 text-sm text-center capitalize">
+            {cat.tipe || "-"}
+          </span>
+
+          {/* Aksi */}
+          <div className="flex justify-end gap-2">
             <button
               onClick={() => {
                 setEditingCategory(cat);
                 setEditModalOpen(true);
               }}
-              className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 transition"
+              className="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition"
             >
               Edit
             </button>
             <button
               onClick={() => handleDelete(cat.id)}
-              className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+              className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition"
               disabled={loadingId === cat.id}
             >
               {loadingId === cat.id ? "Menghapus..." : "Hapus"}

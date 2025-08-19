@@ -1,18 +1,23 @@
 "use client";
 
 import TransactionForm from "./TransactionForm";
+import { Transaction } from "@/entities/transaction";
 import { Category } from "@/entities/category";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   categories: Category[];
+  user: { id: number; username?: string; email?: string } | null;
+  onAddTransaction: (tx: Transaction) => void;
 }
 
 export default function CreateTransactionModalPengeluaran({
   isOpen,
   onClose,
   categories,
+  user,
+  onAddTransaction,
 }: Props) {
   if (!isOpen) return null; // Modal tidak tampil jika isOpen = false
 
@@ -23,7 +28,9 @@ export default function CreateTransactionModalPengeluaran({
         <TransactionForm
           categories={categories}
           type="pengeluaran"
-          onSuccess={onClose} // Tutup modal setelah sukses
+          onSuccess={onClose}
+          user={user!}
+          onAddTransaction={onAddTransaction}
         />
         <button
           onClick={onClose}
