@@ -17,6 +17,7 @@ import CreateTransactionModalPemasukan from "../transactions/CreateTransactionMo
 import CreateTransactionModalPengeluaran from "../transactions/CreateTransactionModalPengeluaran";
 import Laporan from "../transactions/Laporan";
 import Content from "./Content";
+import Assistant from "../assistent/page";
 
 interface User {
   id: number;
@@ -37,7 +38,12 @@ export default function DashboardPage({ transaction }: PageProps) {
   const [openPengeluaran, setOpenPengeluaran] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeMenu, setActiveMenu] = useState<
-    "dashboard" | "pemasukan" | "pengeluaran" | "kategori" | "laporan"
+    | "dashboard"
+    | "assistant"
+    | "pemasukan"
+    | "pengeluaran"
+    | "kategori"
+    | "laporan"
   >("dashboard");
 
   // Ambil data user
@@ -114,6 +120,7 @@ export default function DashboardPage({ transaction }: PageProps) {
           <nav className="flex flex-col gap-2 flex-1">
             {[
               "dashboard",
+              "assistant",
               "pemasukan",
               "pengeluaran",
               "kategori",
@@ -143,6 +150,8 @@ export default function DashboardPage({ transaction }: PageProps) {
           {activeMenu === "dashboard" && (
             <Content transactions={transactions} />
           )}
+
+          {activeMenu === "assistant" && <Assistant />}
 
           {activeMenu === "pemasukan" && (
             <>
